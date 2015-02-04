@@ -27,6 +27,15 @@ class d2mailer {
         $this->fromName = $module->fromName;
         $this->smtp_host = $module->smtp_host;
         $this->smtp_port = $module->smtp_port;
+        if (class_exists('Swift', false)) {
+            return true;
+        }
+        require_once(Yii::getPathOfAlias('swiftMailer') .'/classes/Swift.php');
+        Yii::registerAutoloader(array('Swift','autoload'));
+        require_once(Yii::getPathOfAlias('swiftMailer') .'/swift_init.php');
+        return true;
+
+
     }
 
     /**
@@ -63,6 +72,7 @@ class d2mailer {
         }
 
         //create message
+        //Yii::import('vendor.swiftmailer.swiftmailer.lib.classes.Swift.*');
         $swiftMessage = Swift_Message::newInstance($subject);
         $swiftMessage->setBody($message, 'text/html');
         $swiftMessage->setFrom($from_email, $from_name);
