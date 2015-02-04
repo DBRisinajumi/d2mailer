@@ -52,12 +52,6 @@ class d2mailer {
         
         $user = User::model()->findbyPk($user_id);
 
-        //get profile
-        $profile = Profile::model()->findByAttributes(['person_id' => $this->pprs_id]);
-        if (!$user) {
-            $this->error = Yii::t('D2mailerModule.errors', 'Can not found user');
-            return false;
-        }
 
         $user_full_name = $user->profile->first_name . ' ' . $user->profile->last_name;
         
@@ -91,7 +85,7 @@ class d2mailer {
             
         }
 
-        return $user_full_name . ' ' . $profile->user->email;
+        return $user_full_name . ' ' . $user->email;
     }
 
 }
