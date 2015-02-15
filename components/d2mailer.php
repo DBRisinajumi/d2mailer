@@ -16,6 +16,11 @@ class d2mailer {
     public $smtp_host;
     public $smtp_port;
     public $error = false;
+    
+    public $logging = false;
+    public $logging_model_name = false;
+    public $logging_model_id = false;
+    
 
     public function __construct() {
         
@@ -27,6 +32,9 @@ class d2mailer {
         $this->fromName = $module->fromName;
         $this->smtp_host = $module->smtp_host;
         $this->smtp_port = $module->smtp_port;
+        $this->logging = $module->logging;
+        
+    
         if (class_exists('Swift', false)) {
             return true;
         }
@@ -37,6 +45,20 @@ class d2mailer {
 
 
     }
+    
+    public function isConcole() {
+        return (get_class(Yii::app()) == 'CConsoleApplication');
+    }
+
+    public function setLogModel($model){
+        if(!$model){
+            return false;
+        }
+        $this->logging_model_name = get_class($model);
+        $this->logging_model_id = $model->primaryKey;
+    }
+
+    
 
     /**
      * send email to user by smtp
@@ -78,6 +100,21 @@ class d2mailer {
         $swiftMessage->setFrom($from_email, $from_name);
         $swiftMessage->setTo($user->email, $user_full_name);
 
+        if($this->logging && $this->logging_model_name && $this->logging_model_id){
+            $mllg = new MllgMailerLog();
+            $mllg->mllg_model_name = $this->logging_model_name;
+            $mllg->mllg_model_id = $this->logging_model_id;
+            $mllg->mllg_datetime = new CDbExpression('NOW()');
+            if(!$this->isConcole()){
+                $mllg->mllg_user_id = Yii::app()->user->id;
+            }
+            $mllg->mllg_to = $user->email;
+            $mllg->mllg_subject = $subject;
+            $mllg->mllg_text = $message;
+            $mllg->mllg_text_format = MllgMailerLog::MLLG_TEXT_FORMAT_TEXTHTML;
+            $mllg->mllg_status = MllgMailerLog::MLLG_STATUS_SENT;            
+        }         
+        
         /** 
          * Create the Mailer and Send
          * @link http://swiftmailer.org/docs/sending.html
@@ -91,10 +128,18 @@ class d2mailer {
             $this->error = Yii::t('D2personModule.model', 'Can not send email to ')
                     . $user_full_name . ' '
                     . $profile->user->email;
+            if($this->logging && $this->logging_model_name && $this->logging_model_id){
+                $mllg->mllg_status = MllgMailerLog::MLLG_STATUS_ERROR;            
+                $mllg->save();
+            }                    
             return false;
-            
         }
 
+        if($this->logging && $this->logging_model_name && $this->logging_model_id){
+            $mllg->mllg_status = MllgMailerLog::MLLG_STATUS_SENT;            
+            $mllg->save();
+        }                         
+        
         return $user_full_name . ' ' . $user->email;
     }
 

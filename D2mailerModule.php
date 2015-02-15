@@ -6,6 +6,8 @@ class D2mailerModule extends CWebModule
     public $fromName;
     public $smtp_host;
     public $smtp_port;
+    
+    public $logging = false;
 	
     public function init()
 	{
