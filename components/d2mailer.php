@@ -125,9 +125,11 @@ class d2mailer {
   
         //create Mauler and send
         if(!Swift_Mailer::newInstance($transport)->send($swiftMessage)){
-            $this->error = Yii::t('D2personModule.model', 'Can not send email to ')
+            $error_text = Yii::t('D2personModule.model', 'Can not send email to ')
                     . $user_full_name . ' '
                     . $user->email;
+            $this->error = $error_text;
+            Yii:log(CLogger::LEVEL_ERROR,$error_text,'d2mailer');
             if($this->logging && $this->logging_model_name && $this->logging_model_id){
                 $mllg->mllg_status = MllgMailerLog::MLLG_STATUS_ERROR;            
                 $mllg->save();
