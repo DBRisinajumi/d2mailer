@@ -129,7 +129,7 @@ class d2mailer {
                     . $user_full_name . ' '
                     . $user->email;
             $this->error = $error_text;
-            Yii:log(CLogger::LEVEL_ERROR,$error_text,'d2mailer');
+            Yii::log(CLogger::LEVEL_ERROR,$error_text);
             if($this->logging && $this->logging_model_name && $this->logging_model_id){
                 $mllg->mllg_status = MllgMailerLog::MLLG_STATUS_ERROR;            
                 $mllg->save();
