@@ -18,8 +18,8 @@ add under module:
             'fromName' => 'Uldis Nelsons',
             'smtp_host' => 'smtp.apollo.lv',
             'smtp_port' => 25,
-            'smtp_username' => 'dff40af980640fd4bf0de4ffc262cbc1', //optional
-            'smtp_password' => '9f7dd189540c4fdbf51695c86044bc5c', //optional
+            'smtp_username' => 'username', //optional
+            'smtp_password' => 'password', //optional
         ),         
 
         
