@@ -15,6 +15,8 @@ class d2mailer {
     public $fromName;
     public $smtp_host;
     public $smtp_port;
+    public $smtp_username;
+    public $smtp_password;
     public $error = false;
     
     public $logging = false;
@@ -32,6 +34,8 @@ class d2mailer {
         $this->fromName = $module->fromName;
         $this->smtp_host = $module->smtp_host;
         $this->smtp_port = $module->smtp_port;
+        $this->smtp_username = $module->smtp_username;
+        $this->smtp_password = $module->smtp_password;
         $this->logging = $module->logging;
         
     
@@ -121,7 +125,13 @@ class d2mailer {
          */
         
         // Create the Transport
-        $transport = Swift_SmtpTransport::newInstance($this->smtp_host, $this->smtp_port);
+        if(!$this->smtp_username){
+            $transport = Swift_SmtpTransport::newInstance($this->smtp_host, $this->smtp_port);
+        }else{
+            $transport = Swift_SmtpTransport::newInstance($this->smtp_host, $this->smtp_port)
+                        ->setUsername($this->smtp_username)
+                        ->setPassword($this->smtp_password);
+        }
   
         //create Mauler and send
         if(!Swift_Mailer::newInstance($transport)->send($swiftMessage)){
